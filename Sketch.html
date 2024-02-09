@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      #game-area {
+        width: 400px;
+        height: 400px;
+        border: 1px solid black;
+        position: relative;
+      }
+      #paddle {
+        width: 80px;
+        height: 10px;
+        background-color: red;
+        position: absolute;
+        bottom: 10px;
+        left: 160px;
+      }
+      .falling-object {
+        width: 20px;
+        height: 20px;
+        background-color: blue;
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-area">
+      <div id="paddle"></div>
+    </div>
+
+    <script>
+      var gameArea = document.getElementById("game-area");
+      var paddle = document.getElementById("paddle");
+      var score = 0;
+
+      function movePaddle(event) {
+        var xPosition = event.clientX - gameArea.offsetLeft;
+        paddle.style.left = xPosition - paddle.offsetWidth / 2 + "px";
+      }
+
+      function createFallingObject() {
+        var fallingObject = document.createElement("div");
+        fallingObject.className = "falling-object";
+        fallingObject.style.left = Math.random() * (gameArea.offsetWidth - 20) + "px";
+        gameArea.appendChild(fallingObject);
+
+        var fallInterval = setInterval(function () {
+          var currentTop = fallingObject.offsetTop;
+          fallingObject.style.top = currentTop + 1 + "px";
+
+          if (currentTop > gameArea.offsetHeight - 20) {
+            clearInterval(fallInterval);
+            gameArea.removeChild(fallingObject);
+          } else if (
+            currentTop + fallingObject.offsetHeight > paddle.offsetTop &&
+            currentTop < paddle.offsetTop + paddle.offsetHeight &&
+            fallingObject.offsetLeft + fallingObject.offsetWidth > paddle.offsetLeft &&
+            fallingObject.offsetLeft < paddle.offsetLeft + paddle.offsetWidth
+          ) {
+            clearInterval(fallInterval);
+            gameArea.removeChild(fallingObject);
+            score++;
+            document.getElementById("score").innerHTML = "Score: " + score;
+          }
+        }, 10);
+      }
+
+      document.addEventListener("mousemove", movePaddle);
+      setInterval(createFallingObject, 1000);
+    </script>
+  </body>
+</html>
